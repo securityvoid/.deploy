@@ -89,9 +89,13 @@ function copyFiles(config, folder){
                 var filter_base = targetFile.substr(process.env.DEPLOYMENT_SOURCE.length).split(path.sep)[0];
                 var filter = path.join(process.env.DEPLOYMENT_SOURCE, filter_base, exclude[i]);
 
-                if(targetFile.startsWith(filter))
+                if(targetFile.startsWith(filter)){
+                    console.log("Skipping:" + targetFile);
                     return false;
+                }
+
             }
+            console.log("Adding:" + path.normalize(file));
             return true;
         }, function(err){
             if (err)
