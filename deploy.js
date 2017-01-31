@@ -84,12 +84,13 @@ function copyFiles(config, folder){
     var exclude = config.exclude_dir;
     fs.copy(fromDir, toDir,
         function(file){
+            console.log("TargetFile:" + targetFile);
             for(var i = 0; i < exclude.length; i++){
                 var targetFile = path.normalize(file);
                 var filter_base = targetFile.substr(process.env.DEPLOYMENT_SOURCE.length).split(path.sep)[0];
                 var filter = path.join(process.env.DEPLOYMENT_SOURCE, filter_base, exclude[i]);
+                console.log("Filter:" + filter);
 
-                console.log("Testing - targetFile:" + targetFile + " startsWith:" + filter);
                 if(targetFile.startsWith(filter)){
                     return false;
                 }
