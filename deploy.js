@@ -157,7 +157,13 @@ function createDependencyFile(config, folder){
                         comments: false,
                     }
                 })
-            ]
+            ],
+            module: {
+                loaders: [{
+                    test: /\.json$/,
+                    loader: 'json-loader'
+                }]
+            }
         }, function(err, stats) {
             //Delete the temp file once created
             try {
