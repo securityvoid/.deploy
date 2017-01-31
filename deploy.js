@@ -89,7 +89,7 @@ function copyFiles(config, folder){
                 var targetFile = path.normalize(file);
                 var filter_base = targetFile.substr(process.env.DEPLOYMENT_SOURCE.length).split(path.sep)[0];
                 var filter = path.join(process.env.DEPLOYMENT_SOURCE, filter_base, exclude[i]);
-                console.log("Filter:" + filter);
+                console.log("Filter:" + filter, "filter_base:" + filter_base, "DEPLOYMENT_SOURCE:" + process.env.DEPLOYMENT_SOURCE);
 
                 if(targetFile.startsWith(filter)){
                     return false;
