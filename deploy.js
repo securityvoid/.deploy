@@ -140,6 +140,7 @@ function createDependencyFile(config, folder){
         fs.writeFileSync(path.join(folder, config.outputFile), jsContents);
 
         console.log("Running Webpack...");
+        console.log("base:" + base, "folder:" + folder, "outFile:" + config.outputFile, "outputDir:" + outputDir);
         var compiler = webpack({
             entry: path.join(base, folder, config.outputFile),
             target: 'node',
@@ -175,11 +176,18 @@ function createDependencyFile(config, folder){
                 if(error.code !== "ENOENT")
                     err = error;
             }
-            if(err)
+            if(err){
+                console.log("Full Error");
+                console.log(JSON.stringify(err));
                 deferred.reject({success: false, error : err});
+            }
+            console.log("WebPack status...");
             var jsonStats = stats.toJson();
-            if(jsonStats.errors.length > 0)
+            if(jsonStats.errors.length > 0){
+                console.log("JSonStats:")
+                console.log(JSON.stringify(jsonStats));
                 deferred.reject({success: false, error : jsonStats.errors});
+            }
             if(jsonStats.warnings.length > 0)
                 deferred.resolve({success : true, config: config, warnings : jsonStats.warnings});
             deferred.resolve({success : true, config: config});
