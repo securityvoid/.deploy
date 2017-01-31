@@ -84,7 +84,7 @@ function copyFiles(config, folder){
     var exclude = config.exclude_dir;
     fs.copy(fromDir, toDir,
         function(file){
-            console.log("TargetFile:" + targetFile);
+            console.log("TargetFile:" + path.normalize(file));
             for(var i = 0; i < exclude.length; i++){
                 var targetFile = path.normalize(file);
                 var filter_base = targetFile.substr(process.env.DEPLOYMENT_SOURCE.length).split(path.sep)[0];
