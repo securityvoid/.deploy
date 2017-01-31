@@ -118,7 +118,12 @@ function prepareDistFolder(){
                         if (error) {
                             deferred.reject({success : false, error : error, stdout: stdout, stderr : stderr })
                         }
-                        deferred.resolve({success : true, error : error, stdout: stdout, stderr : stderr })
+                        exec('git pull', {cwd: path.join(__dirname, "dist")}, function(error2, stdout2, stderr2){
+                            if (error2) {
+                                deferred.reject({success : false, error : error2, stdout: stdout2, stderr : stderr2 })
+                            }
+                            deferred.resolve({success : true, error : error2, stdout: stdout2, stderr : stderr2 })
+                        });
                     });
                 }
             })
