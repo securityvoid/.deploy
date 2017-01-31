@@ -6,6 +6,7 @@ const q = require("q");
 const exclude = ['dist', "node_modules", "deploy.js", ".idea", ".git", 'makeMaster.js', 'package.json'];
 const exec = require('child_process').exec;
 
+//Main function to execute for the code.
 prepareDistFolder().then(copyFiles).then(webPackIt).then(gitAddCommit).then(function(results){
     console.log("Success!");
 }).catch(function(err){
@@ -13,6 +14,10 @@ prepareDistFolder().then(copyFiles).then(webPackIt).then(gitAddCommit).then(func
     console.log(JSON.stringify(err));
 });
 
+/**
+ * webPackIt - Takes the main deploy.js, pulls in all dependencies to one file, and uglifies it for faster operation.
+ * @returns {*|promise|h} - Promise returns {success : true} if everything runs properly, or rejects on failure with the error in {error : error}
+ */
 function webPackIt(){
     var deferred = q.defer();
 
@@ -57,6 +62,10 @@ function webPackIt(){
     return deferred.promise;
 }
 
+/**
+ * copyFiles - Copies all the files besides ".git" needed for the Master branch into the "dist" folder.
+ * @returns {*|promise|h} - Resolves on success with a payload of {success : true}, rejects on failure with {success: false, error : error}
+ */
 function copyFiles(){
     var deferred = q.defer();
     var dist = path.join(__dirname, "dist");
@@ -84,6 +93,11 @@ function copyFiles(){
     return deferred.promise;
 }
 
+/**
+ * prepareDistFolder - Removes the prior dist folder, recreates it, copies over the .git directory, and sets the branch to "master" before
+ * the other operations run, so that everything is ready to go.
+ * @returns {*|promise|h} - Resolves to success : "true" with the output of the git command on success, rejects to success : false.
+ */
 function prepareDistFolder(){
     var deferred = q.defer();
     var dist = path.join(__dirname, "dist");
@@ -109,6 +123,10 @@ function prepareDistFolder(){
     return deferred.promise;
 }
 
+/**
+ * gitAddCommit - Adds all files that changed from the master that are in the dist folder, commits, and pushes these changes.
+ * @returns {*|promise|h} - Resolves to success : true on success, or rejects to success : false. Also contains output of commands.
+ */
 function gitAddCommit(){
     var deferred = q.defer();
     exec('git add .', {cwd: path.join(__dirname, "dist")}, function(error, stdout, stderr){
