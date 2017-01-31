@@ -77,9 +77,13 @@ function copyFiles(){
                 for(var i = 0; i < exclude.length; i++){
                     var targetFile = path.normalize(file);
                     var filter = path.join(__dirname, exclude[i]);
-                    if(targetFile.startsWith(filter))
+                    if(targetFile.startsWith(filter)){
+                        console.log("Skipping:" + targetFile);
                         return false;
+                    }
+
                 }
+                console.log("Adding:" + path.normalize(file));
                 return true;
             }, function (err) {
                 if (err)
