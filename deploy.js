@@ -109,6 +109,7 @@ function createDependencyFile(config, folder){
     const base = process.env.DEPLOYMENT_SOURCE;
     const index = path.join(base, folder, "index.js");
     const outputDir = path.join(base, "dist", folder);
+    console.log("index:" + index, "outputDir:", outputDir);
 
     fs.readFile(index, 'utf8', function (err,data) {
         if (err) {
@@ -138,6 +139,7 @@ function createDependencyFile(config, folder){
         jsContents = jsContents.slice(0, -2) + "\n\t};";
         fs.writeFileSync(path.join(folder, config.outputFile), jsContents);
 
+        console.log("Running Webpack...");
         var compiler = webpack({
             entry: path.join(base, folder, config.outputFile),
             target: 'node',
