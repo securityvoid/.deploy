@@ -3,10 +3,10 @@ const webpack = require("webpack");
 const fs = require('fs-extra');
 const path = require('path');
 const q = require("q");
-const exclude = ['dist', "node_modules", "deploy.js", ".idea", 'makeMaster.js', 'package.json'];
+const exclude = ['dist', "node_modules", "deploy.js", ".idea", ".git", 'makeMaster.js', 'package.json'];
 const exec = require('child_process').exec;
 
-copyFiles().then(setBranchMaster).then(webPackIt).then(gitAddCommit).then(function(results){
+prepareDistFolder().then(copyFiles).then(webPackIt).then(gitAddCommit).then(function(results){
     console.log("Success!");
 }).catch(function(err){
     console.log("Failed!");
@@ -60,7 +60,6 @@ function webPackIt(){
 function copyFiles(){
     var deferred = q.defer();
     var dist = path.join(__dirname, "dist");
-    fs.removeSync(dist);
     fs.ensureDir(dist, function (err) {
         if(err){
             deferred.reject({success : false, error : err});
@@ -85,14 +84,28 @@ function copyFiles(){
     return deferred.promise;
 }
 
-function setBranchMaster(){
+function prepareDistFolder(){
     var deferred = q.defer();
-    exec('git checkout master', {cwd: path.join(__dirname, "dist")}, function(error, stdout, stderr){
-        if (error) {
-            deferred.reject({success : false, error : error, stdout: stdout, stderr : stderr })
+    var dist = path.join(__dirname, "dist");
+    fs.removeSync(dist);
+    fs.ensureDir(dist, function (err) {
+        if(err){
+            deferred.reject({success : false, error : err});
+        } else {
+            fs.copy(path.join(__dirname, ".git"), path.join(dist, ".git"), function (err) {
+                if (err)
+                    deferred.reject({success : false, error : err});
+                else {
+                    exec('git checkout master', {cwd: path.join(__dirname, "dist")}, function(error, stdout, stderr){
+                        if (error) {
+                            deferred.reject({success : false, error : error, stdout: stdout, stderr : stderr })
+                        }
+                        deferred.resolve({success : true, error : error, stdout: stdout, stderr : stderr })
+                    });
+                }
+            })
         }
-        deferred.resolve({success : true, error : error, stdout: stdout, stderr : stderr })
-    });
+    })
     return deferred.promise;
 }
 
@@ -104,11 +117,11 @@ function gitAddCommit(){
         }
         exec('git commit --message="Build Master:' + new Date().toISOString() + '"',
             {cwd: path.join(__dirname, "dist")}, function(error2, stdout2, stderr2){
-            if (error) {
+            if (error2) {
                 deferred.reject({success : false, error : error2, stdout: stdout2, stderr : stderr2 })
             }
             exec('git push', {cwd: path.join(__dirname, "dist")}, function(error3, stdout3, stderr3){
-                    if (error) {
+                    if (error3) {
                         deferred.reject({success : false, error : error3, stdout: stdout3, stderr : stderr3 })
                     }
                     deferred.resolve({success : true, error : error3, stdout: stdout3, stderr : stderr3 })
