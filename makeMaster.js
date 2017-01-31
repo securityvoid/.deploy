@@ -114,16 +114,24 @@ function prepareDistFolder(){
                 if (err)
                     deferred.reject({success : false, error : err});
                 else {
-                    exec('git checkout master', {cwd: path.join(__dirname, "dist")}, function(error, stdout, stderr){
+                    exec('git stash', {cwd: path.join(__dirname, "dist")}, function(error, stdout, stderr) {
                         if (error) {
-                            deferred.reject({success : false, error : error, stdout: stdout, stderr : stderr })
+                            deferred.reject({success: false, error: error, stdout: stdout, stderr: stderr})
+                        } else {
+                            exec('git checkout master', {cwd: path.join(__dirname, "dist")}, function (error1, stdout1, stderr1) {
+                                if (error) {
+                                    deferred.reject({success: false, error: error1, stdout: stdout1, stderr: stderr1})
+                                } else {
+                                    exec('git pull', {cwd: path.join(__dirname, "dist")}, function (error2, stdout2, stderr2) {
+                                        if (error2) {
+                                            deferred.reject({success: false, error: error2, stdout: stdout2, stderr: stderr2})
+                                        } else {
+                                            deferred.resolve({success: true, error: error2, stdout: stdout2, stderr: stderr2})
+                                        }
+                                    });
+                                }
+                            });
                         }
-                        exec('git pull', {cwd: path.join(__dirname, "dist")}, function(error2, stdout2, stderr2){
-                            if (error2) {
-                                deferred.reject({success : false, error : error2, stdout: stdout2, stderr : stderr2 })
-                            }
-                            deferred.resolve({success : true, error : error2, stdout: stdout2, stderr : stderr2 })
-                        });
                     });
                 }
             })
@@ -141,19 +149,22 @@ function gitAddCommit(){
     exec('git add .', {cwd: path.join(__dirname, "dist")}, function(error, stdout, stderr){
         if (error) {
             deferred.reject({success : false, error : error, stdout: stdout, stderr : stderr })
-        }
-        exec('git commit --message="Build Master:' + new Date().toISOString() + '"',
-            {cwd: path.join(__dirname, "dist")}, function(error2, stdout2, stderr2){
-            if (error2) {
-                deferred.reject({success : false, error : error2, stdout: stdout2, stderr : stderr2 })
-            }
-            exec('git push', {cwd: path.join(__dirname, "dist")}, function(error3, stdout3, stderr3){
-                    if (error3) {
-                        deferred.reject({success : false, error : error3, stdout: stdout3, stderr : stderr3 })
+        } else {
+            exec('git commit --message="Build Master:' + new Date().toISOString() + '"',
+                {cwd: path.join(__dirname, "dist")}, function(error2, stdout2, stderr2){
+                    if (error2) {
+                        deferred.reject({success : false, error : error2, stdout: stdout2, stderr : stderr2 })
+                    } else {
+                        exec('git push', {cwd: path.join(__dirname, "dist")}, function(error3, stdout3, stderr3){
+                            if (error3) {
+                                deferred.reject({success : false, error : error3, stdout: stdout3, stderr : stderr3 })
+                            } else {
+                                deferred.resolve({success : true, error : error3, stdout: stdout3, stderr : stderr3 })
+                            }
+                        });
                     }
-                    deferred.resolve({success : true, error : error3, stdout: stdout3, stderr : stderr3 })
                 });
-        });
+        }
     });
     return deferred.promise;
 }
