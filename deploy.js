@@ -244,6 +244,7 @@ function finalMove(config){
     console.log("Moving wwwroot to wwwroot2");
     fs.move(path.join(base, "wwwroot"), path.join(base, "wwwroot2"), function(err){
         if(err) {
+            console.log("Error wwwroot copy:",JSON.stringify(err));
             deferred.reject({success : false, "error" : err});
         } else {
             console.log("Moving dist to wwwroot");
