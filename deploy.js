@@ -242,13 +242,13 @@ function finalMove(config){
     console.log("Copying host.json");
     fs.copySync(path.join(deploy_dir, "host.json"), path.join(deploy_dir, "dist", "host.json"));
     console.log("Moving wwwroot to wwwroot2");
-    fs.move(path.join(base, "wwwroot"), path.join(base, "wwwroot2"), function(err){
+    fs.rename(path.join(base, "wwwroot"), path.join(base, "wwwroot2"), function(err){
         if(err) {
             console.log("Error wwwroot copy:",JSON.stringify(err));
             deferred.reject({success : false, "error" : err});
         } else {
             console.log("Moving dist to wwwroot");
-            fs.move(path.join(deploy_dir, "dist"), path.join(base, "wwwroot"), function(err){
+            fs.rename(path.join(deploy_dir, "dist"), path.join(base, "wwwroot"), function(err){
                 if(err) {
                     deferred.reject({success : false, "error" : err});
                 } else {
