@@ -27,12 +27,13 @@ function webPackIt(){
         target: 'node',
         cache : true,
         watch : true,
+        debug: true,
+        exclude: path.join(__dirname, "node_modules", "uglify-js"),
         output : {
             path : path.join(__dirname, "dist"),
             filename : "deploy.js"
         },
         node: {
-            fs: "empty",
             __filename: false,
             __dirname: false,
         },
@@ -91,7 +92,12 @@ function copyFiles(){
                 if (err)
                     deferred.reject({success : false, error : err});
                 else {
-                    deferred.resolve({success : true});
+                    fs.copy(path.join(__dirname, "node_modules", "uglify-js"), path.join(dist, "node_modules", "uglify-js"), function(err){
+                        if (err)
+                            deferred.reject({success : false, error : err, action: "uglify-copy"});
+                        else
+                            deferred.resolve({success : true});
+                    });
                 }
             })
         }
