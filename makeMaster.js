@@ -7,7 +7,7 @@ const exclude = ['dist', "node_modules", "deploy.js", ".idea", ".git", 'makeMast
 const exec = require('child_process').exec;
 
 //Main function to execute for the code.
-prepareDistFolder().then(copyFiles).then(webPackIt).then(gitAddCommit).then(function(results){
+prepareDistFolder().then(copyFiles).then(fixUglify).then(webPackIt).then(gitAddCommit).then(function(results){
     console.log("Success!");
 }).catch(function(err){
     console.log("Failed!");
@@ -23,6 +23,7 @@ function webPackIt(){
 
     var compiler = webpack({
         entry: path.join(__dirname, "deploy.js"),
+        errorDetails: true,
         target: 'node',
         output : {
             path : path.join(__dirname, "dist"),
@@ -47,6 +48,11 @@ function webPackIt(){
                 test: /\.json$/,
                 loader: 'json-loader'
             }]
+        },
+        resolve : {
+            alias : {
+                "uglify-js$" : path.join(__dirname, "node_modules", "uglify-js", "uglify.js")
+            }
         }
     }, function(err, stats) {
         if(err)
@@ -164,5 +170,28 @@ function gitAddCommit(){
                 });
         }
     });
+    return deferred.promise;
+}
+
+/**
+ * fixUglify - Self-Uglifies since doing this the normal way with WebPack fails. Webpack config does the substitute.
+ * @returns {*|promise|f} - Resolves if successful, rejects if fails.
+ */
+function fixUglify(){
+    var deferred = q.defer();
+    var uglifyPath = path.join(__dirname, "node_modules", "uglify-js" );
+
+    if(fs.existsSync(path.join(uglifyPath, "uglify.js"))){
+        deferred.resolve({success: true, action: "Already uglified", message: "Already uglified!"});
+    } else {
+        //Generate Self-Uglified Uglify JS.
+        exec('node bin/uglifyjs --self -o uglify.js', {cwd: uglifyPath }, function(error, stdout, stderr) {
+            if(error){
+                deferred.reject({success: false, action: "Self-uglify", error: error, stdout: stdout, stderr: stderr});
+            } else {
+                deferred.resolve({success: true, action: "Self-uglify", message : "Complete!"});
+            }
+        });
+    }
     return deferred.promise;
 }
