@@ -7,7 +7,7 @@ const exclude = ['dist', "node_modules", "deploy.js", ".idea", ".git", 'makeMast
 const exec = require('child_process').exec;
 
 //Main function to execute for the code.
-prepareDistFolder().then(copyFiles).then(fixUglify).then(webPackIt).then(gitAddCommit).then(function(results){
+prepareDistFolder().then(copyFiles).then(webPackIt).then(gitAddCommit).then(function(results){
     console.log("Success!");
 }).catch(function(err){
     console.log("Failed!");
