@@ -11,7 +11,7 @@ prepareDistFolder().then(copyFiles).then(webPackIt).then(gitAddCommit).then(func
     console.log("Success!");
 }).catch(function(err){
     console.log("Failed!");
-    console.log(JSON.stringify(err));
+    console.log(err.message);
 });
 
 /**
@@ -30,8 +30,9 @@ function webPackIt(){
             filename : "deploy.js"
         },
         node: {
+            fs: "empty",
             __filename: false,
-            __dirname: false
+            __dirname: false,
         },
         plugins: [
             new webpack.optimize.UglifyJsPlugin({
@@ -48,11 +49,6 @@ function webPackIt(){
                 test: /\.json$/,
                 loader: 'json-loader'
             }]
-        },
-        resolve : {
-            alias : {
-                "uglify-js$" : path.join(__dirname, "node_modules", "uglify-js", "tools", "node.js")
-            }
         }
     }, function(err, stats) {
         if(err)
