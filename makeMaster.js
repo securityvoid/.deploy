@@ -12,6 +12,7 @@ prepareDistFolder().then(copyFiles).then(webPackIt).then(gitAddCommit).then(func
 }).catch(function(err){
     console.log("Failed!");
     console.log(err.message);
+    console.log(JSON.stringify(err));
 });
 
 /**
@@ -23,8 +24,9 @@ function webPackIt(){
 
     var compiler = webpack({
         entry: path.join(__dirname, "deploy.js"),
-        errorDetails: true,
         target: 'node',
+        cache : true,
+        watch : true,
         output : {
             path : path.join(__dirname, "dist"),
             filename : "deploy.js"
