@@ -25,10 +25,6 @@ function webPackIt(){
     var compiler = webpack({
         entry: path.join(__dirname, "deploy.js"),
         target: 'node',
-        cache : true,
-        watch : true,
-        debug: true,
-        exclude: path.join(__dirname, "node_modules", "uglify-js"),
         output : {
             path : path.join(__dirname, "dist"),
             filename : "deploy.js"
@@ -49,6 +45,10 @@ function webPackIt(){
         ],
         module: {
             loaders: [{
+                loader: "babel-loader",
+                test: /\.js$/,
+                exclude: "/node_modules/uglify-js",
+            },{
                 test: /\.json$/,
                 loader: 'json-loader'
             }]

@@ -5,6 +5,8 @@
   "description": "Initial Reporting Tool",
   "author": "Doug Logan <dlogan@cyberninjas.com>",
   "dependencies": {
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
     "fs-extra": "^2.0.0",
     "json-loader": "^0.5.4",
     "path": "^0.12.7",
