@@ -51,7 +51,7 @@ function webPackIt(){
         },
         resolve : {
             alias : {
-                "uglify-js$" : path.join(__dirname, "node_modules", "uglify-js", "uglify.js")
+                "uglify-js$" : path.join(__dirname, "node_modules", "uglify-js", "tools", "node.js")
             }
         }
     }, function(err, stats) {
@@ -185,7 +185,7 @@ function fixUglify(){
         deferred.resolve({success: true, action: "Already uglified", message: "Already uglified!"});
     } else {
         //Generate Self-Uglified Uglify JS.
-        exec('node bin/uglifyjs --self -o uglify.js', {cwd: uglifyPath }, function(error, stdout, stderr) {
+        exec('node bin/uglifyjs --self -c -o uglify.js', {cwd: uglifyPath }, function(error, stdout, stderr) {
             if(error){
                 deferred.reject({success: false, action: "Self-uglify", error: error, stdout: stdout, stderr: stderr});
             } else {
