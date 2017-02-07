@@ -129,7 +129,7 @@ function createDependencyFile(config, folder){
             match = regex.exec(data);
         }
 
-        var jsContents = "'use strict'\n\tazure.deps = {\n";
+        var jsContents = "\tglobal.azureDeps = {\n";
         for (var key in libraries) {
             if (libraries.hasOwnProperty(key)) {
                 jsContents += "\t\t" + cleanLibraryName(key) + " : " + libraries[key] + ",\n";
@@ -223,7 +223,7 @@ function updateIndex(config, folder){
             count++;
         }
         line = line.replace(regex, function(match, $1, offset, original) {
-            return "azure.deps." + cleanLibraryName($1);
+            return "global.azureDeps." + cleanLibraryName($1);
         }) + "\n";
         jsContents += line + after;
     }).on('close', function(){
