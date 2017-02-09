@@ -11,7 +11,7 @@ const config = {
 
 createDistribution(config).then(function(results){
     console.log(JSON.stringify(results));
-    finalMove(config).then(function(result){
+    lib.finalMove(config).then(function(result){
         console.log("SUCCESS!");
     }), function(err){
         console.log("FAILURE!");
