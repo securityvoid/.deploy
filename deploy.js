@@ -13,13 +13,16 @@ createDistribution(config).then(function(results){
     console.log(JSON.stringify(results));
     lib.finalMove(config).then(function(result){
         console.log("SUCCESS!");
+        return 0;
     }), function(err){
         console.log("FAILURE!");
         console.log(JSON.stringify(err));
+        return -1;
     };
 }).catch(function(error){
     console.log("ERROR!");
     console.log(JSON.stringify(error));
+    return -1;
 });
 
 
