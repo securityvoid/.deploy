@@ -9,8 +9,6 @@ const config = {
     outputFile : (process.env.outputFile) ? process.env.outputFile : "azure.deps.js"
 }
 
-//TODO: Figure out why WildCard paths no longer making it to files/includes
-
 createDistribution(config).then(function(results){
     console.log(JSON.stringify(results));
     lib.finalMove(config).then(function(result){
@@ -44,8 +42,6 @@ function createDistribution(config){
                     return lib.createDependencyFile(config, top_folders[x]).then(function(){
                         return webPackIt(config, top_folders[x]);
                     });
-                }).then(function(){
-                    return lib.updateIndex(config, top_folders[x]);
                 }).catch(function(error){
                     var subDefer = q.defer();
                     if(error.success)
@@ -113,7 +109,6 @@ function webPackIt(config, folder){
             console.log(JSON.stringify(err));
             deferred.reject({success: false, error : err});
         }
-        console.log("WebPack status...");
         var jsonStats = stats.toJson();
         if(jsonStats.errors.length > 0){
             console.log("JSonStats:")
