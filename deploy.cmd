@@ -1,5 +1,7 @@
 @if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
 @echo Started: %date% %time%
+@echo Current Variables
+@SET
 :: ----------------------
 :: KUDU Deployment Script
 :: Version: 1.0.10
