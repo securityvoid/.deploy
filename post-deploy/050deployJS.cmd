@@ -4,7 +4,8 @@ echo Starting Deploy.js: %date% %time%
 echo CurrentDir: %CD%
 
 node .deploy/deploy.js
-IF !ERRORLEVEL! NEQ 0 goto error
+
+IF %ERRORLEVEL% NEQ 0 goto error
 
 echo Finished Deploy.js: %date% %time%
 

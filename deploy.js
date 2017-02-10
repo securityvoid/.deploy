@@ -6,20 +6,19 @@ const fs = require('fs-extra');
 const path = require('path');
 require('dotenv').config({path: path.join(process.env.DEPLOYMENT_SOURCE, '.deployment') });
 
-createDistribution().then(function(results){
-    console.log(JSON.stringify(results));
-    lib.finalMove().then(function(result){
+return createDistribution().then(function(results){
+    return lib.finalMove().then(function(result){
         console.log("SUCCESS!");
-        return 0;
+        process.exit(0);
     }), function(err){
         console.log("FAILURE!");
         console.log(JSON.stringify(err));
-        return -1;
+        process.exit(1);
     };
 }).catch(function(error){
     console.log("ERROR!");
     console.log(JSON.stringify(error));
-    return -1;
+    process.exit(1);
 });
 
 
