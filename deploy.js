@@ -9,6 +9,8 @@ const config = {
     outputFile : (process.env.outputFile) ? process.env.outputFile : "azure.deps.js"
 }
 
+//TODO: Figure out why WildCard paths no longer making it to files/includes
+
 createDistribution(config).then(function(results){
     console.log(JSON.stringify(results));
     lib.finalMove(config).then(function(result){
@@ -101,7 +103,7 @@ function webPackIt(config, folder){
     }, function(err, stats) {
         //Delete the temp file once created
         try {
-            fs.unlinkSync(path.join(base, folder, config.outputFile));
+            //fs.unlinkSync(path.join(base, folder, config.outputFile));
         } catch (error){
             if(error.code !== "ENOENT")
                 err = error;
