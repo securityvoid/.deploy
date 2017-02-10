@@ -4,14 +4,11 @@ const webpack = require("webpack");
 const q = require("q");
 const fs = require('fs-extra');
 const path = require('path');
-const config = {
-    exclude_dir : (process.env.EXCLUDE_DIR) ? JSON.parse(process.env.EXCLUDE_DIR) : [".git", ".deploy", ".idea", "node_modules", "dist"],
-    outputFile : (process.env.outputFile) ? process.env.outputFile : "azure.deps.js"
-}
+require('dotenv').config({path: path.join(process.env.DEPLOYMENT_SOURCE, '.deployment') });
 
-createDistribution(config).then(function(results){
+createDistribution().then(function(results){
     console.log(JSON.stringify(results));
-    lib.finalMove(config).then(function(result){
+    lib.finalMove().then(function(result){
         console.log("SUCCESS!");
         return 0;
     }), function(err){
@@ -28,19 +25,20 @@ createDistribution(config).then(function(results){
 
 ///**************************  FUNCTIONS ***************************** */
 
-function createDistribution(config){
+function createDistribution(){
     console.log("Start: createDistribution");
     var deferred = q.defer();
     var creationResults = [];
-    fs.removeSync(path.join(process.env.DEPLOYMENT_SOURCE, "dist"));
-    lib.getFunctionFolders(config).then(function(results){
+    lib.checkEnvVariables();
+    fs.removeSync(path.join(process.env.DEPLOYMENT_SOURCE, process.env.DEPLOY_DIST_FOLDER));
+    lib.getFunctionFolders().then(function(results){
         var top_folders = results.top_folders;
         for(var x = 0; x < top_folders.length; x++){
             console.log("Start Folder:", top_folders[x]);
             (function(x){
-                creationResults.push(lib.copyFiles(config, top_folders[x]).then(function(){
-                    return lib.createDependencyFile(config, top_folders[x]).then(function(){
-                        return webPackIt(config, top_folders[x]);
+                creationResults.push(lib.copyFiles(top_folders[x]).then(function(){
+                    return lib.createDependencyFile(top_folders[x]).then(function(){
+                        return webPackIt(top_folders[x]);
                     });
                 }).catch(function(error){
                     var subDefer = q.defer();
@@ -59,22 +57,22 @@ function createDistribution(config){
     return deferred.promise;
 }
 
-function webPackIt(config, folder){
+function webPackIt(folder){
     console.log("Start createDependencyFile");
     const deferred = q.defer();
     const base = process.env.DEPLOYMENT_SOURCE;
     const index = path.join(base, folder, "index.js");
-    const outputDir = path.join(base, "dist", folder);
+    const outputDir = path.join(base, process.env.DEPLOY_DIST_FOLDER, folder);
     console.log("index:" + index, "outputDir:", outputDir);
 
     console.log("Running Webpack...");
-    console.log("base:" + base, "folder:" + folder, "outFile:" + config.outputFile, "outputDir:" + outputDir);
+    console.log("base:" + base, "folder:" + folder, "outFile:" + process.env.WEBPACK_OUTPUT_FILE, "outputDir:" + outputDir);
     var compiler = webpack({
-        entry: path.join(base, folder, config.outputFile),
+        entry: path.join(base, folder, process.env.WEBPACK_OUTPUT_FILE),
         target: 'node',
         output : {
             path : outputDir,
-            filename : config.outputFile
+            filename : process.env.WEBPACK_OUTPUT_FILE
         },
         node: {
             __filename: false,
@@ -99,7 +97,7 @@ function webPackIt(config, folder){
     }, function(err, stats) {
         //Delete the temp file once created
         try {
-            //fs.unlinkSync(path.join(base, folder, config.outputFile));
+            fs.unlinkSync(path.join(base, folder, process.env.WEBPACK_OUTPUT_FILE));
         } catch (error){
             if(error.code !== "ENOENT")
                 err = error;
@@ -116,8 +114,8 @@ function webPackIt(config, folder){
             deferred.reject({success: false, error : jsonStats.errors});
         }
         if(jsonStats.warnings.length > 0)
-            deferred.resolve({success : true, config: config, warnings : jsonStats.warnings});
-        deferred.resolve({success : true, config: config});
+            deferred.resolve({success : true, warnings : jsonStats.warnings});
+        deferred.resolve({success : true});
     });
 
     return deferred.promise;
