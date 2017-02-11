@@ -1,7 +1,6 @@
 @echo off
 
 echo Starting Deploy.js: %date% %time%
-echo CurrentDir: %CD%
 
 node .deploy/deploy.js
 
