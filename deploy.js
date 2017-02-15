@@ -1,8 +1,7 @@
 'use strict';
 const lib = require('./lib');
-const webpack = require("webpack");
 
-lib.createDistribution(webpack).then(function(results){
+lib.createDistribution().then(function(results){
     console.log("SUCCESS!");
     process.exit(0);
 }, function(err){
