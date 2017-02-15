@@ -103,7 +103,9 @@ function webPackIt(){
         target: 'node',
         output : {
             path : path.join(__dirname, "dist"),
-            filename : "lib.js"
+            filename : "lib.js",
+            library: "index",
+            libraryTarget: "commonjs2"
         },
         node: {
             __filename: false,
