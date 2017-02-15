@@ -15,6 +15,87 @@ prepareDistFolder().then(copyFiles).then(webPackIt).then(gitAddCommit).then(func
 });
 
 /**
+ * prepareDistFolder - Removes the prior dist folder, recreates it, copies over the .git directory, and sets the branch to "master" before
+ * the other operations run, so that everything is ready to go.
+ * @returns {*|promise|h} - Resolves to success : "true" with the output of the git command on success, rejects to success : false.
+ */
+function prepareDistFolder(){
+    var deferred = q.defer();
+    var dist = path.join(__dirname, "dist");
+    fs.removeSync(dist);
+    fs.ensureDir(dist, function (err) {
+        if(err){
+            deferred.reject({success : false, error : err});
+        } else {
+            fs.copy(path.join(__dirname, ".git"), path.join(dist, ".git"), function (err) {
+                if (err)
+                    deferred.reject({success : false, error : err});
+                else {
+                    exec('git stash', {cwd: path.join(__dirname, "dist")}, function(error, stdout, stderr) {
+                        if (error) {
+                            deferred.reject({success: false, error: error, stdout: stdout, stderr: stderr})
+                        } else {
+                            exec('git checkout master', {cwd: path.join(__dirname, "dist")}, function (error1, stdout1, stderr1) {
+                                if (error) {
+                                    deferred.reject({success: false, error: error1, stdout: stdout1, stderr: stderr1})
+                                } else {
+                                    exec('git pull', {cwd: path.join(__dirname, "dist")}, function (error2, stdout2, stderr2) {
+                                        if (error2) {
+                                            deferred.reject({success: false, error: error2, stdout: stdout2, stderr: stderr2})
+                                        } else {
+                                            deferred.resolve({success: true, error: error2, stdout: stdout2, stderr: stderr2})
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            })
+        }
+    })
+    return deferred.promise;
+}
+
+/**
+ * copyFiles - Copies all the files besides ".git" needed for the Master branch into the "dist" folder.
+ * @returns {*|promise|h} - Resolves on success with a payload of {success : true}, rejects on failure with {success: false, error : error}
+ */
+function copyFiles(){
+    var deferred = q.defer();
+    var dist = path.join(__dirname, "dist");
+    fs.ensureDir(dist, function (err) {
+        if(err){
+            deferred.reject({success : false, error : err});
+        } else {
+            fs.copy(__dirname, dist, function(file){
+                for(var i = 0; i < exclude.length; i++){
+                    var targetFile = path.normalize(file);
+                    var filter = path.join(__dirname, exclude[i]);
+                    if(targetFile.startsWith(filter)){
+                        return false;
+                    }
+
+                }
+                return true;
+            }, function (err) {
+                if (err)
+                    deferred.reject({success : false, error : err});
+                else {
+                    fs.copy(path.join(__dirname, "node_modules", "uglify-js"), path.join(dist, "node_modules", "uglify-js"), function(err){
+                        if (err)
+                            deferred.reject({success : false, error : err, action: "uglify-copy"});
+                        else
+                            deferred.resolve({success : true});
+                    });
+                }
+            })
+        }
+    })
+    return deferred.promise;
+}
+
+/**
  * webPackIt - Takes the main deploy.js, pulls in all dependencies to one file, and uglifies it for faster operation.
  * @returns {*|promise|h} - Promise returns {success : true} if everything runs properly, or rejects on failure with the error in {error : error}
  */
@@ -66,86 +147,6 @@ function webPackIt(){
     return deferred.promise;
 }
 
-/**
- * copyFiles - Copies all the files besides ".git" needed for the Master branch into the "dist" folder.
- * @returns {*|promise|h} - Resolves on success with a payload of {success : true}, rejects on failure with {success: false, error : error}
- */
-function copyFiles(){
-    var deferred = q.defer();
-    var dist = path.join(__dirname, "dist");
-    fs.ensureDir(dist, function (err) {
-        if(err){
-            deferred.reject({success : false, error : err});
-        } else {
-            fs.copy(__dirname, dist, function(file){
-                for(var i = 0; i < exclude.length; i++){
-                    var targetFile = path.normalize(file);
-                    var filter = path.join(__dirname, exclude[i]);
-                    if(targetFile.startsWith(filter)){
-                        return false;
-                    }
-
-                }
-                return true;
-            }, function (err) {
-                if (err)
-                    deferred.reject({success : false, error : err});
-                else {
-                    fs.copy(path.join(__dirname, "node_modules", "uglify-js"), path.join(dist, "node_modules", "uglify-js"), function(err){
-                        if (err)
-                            deferred.reject({success : false, error : err, action: "uglify-copy"});
-                        else
-                            deferred.resolve({success : true});
-                    });
-                }
-            })
-        }
-    })
-    return deferred.promise;
-}
-
-/**
- * prepareDistFolder - Removes the prior dist folder, recreates it, copies over the .git directory, and sets the branch to "master" before
- * the other operations run, so that everything is ready to go.
- * @returns {*|promise|h} - Resolves to success : "true" with the output of the git command on success, rejects to success : false.
- */
-function prepareDistFolder(){
-    var deferred = q.defer();
-    var dist = path.join(__dirname, "dist");
-    fs.removeSync(dist);
-    fs.ensureDir(dist, function (err) {
-        if(err){
-            deferred.reject({success : false, error : err});
-        } else {
-            fs.copy(path.join(__dirname, ".git"), path.join(dist, ".git"), function (err) {
-                if (err)
-                    deferred.reject({success : false, error : err});
-                else {
-                    exec('git stash', {cwd: path.join(__dirname, "dist")}, function(error, stdout, stderr) {
-                        if (error) {
-                            deferred.reject({success: false, error: error, stdout: stdout, stderr: stderr})
-                        } else {
-                            exec('git checkout master', {cwd: path.join(__dirname, "dist")}, function (error1, stdout1, stderr1) {
-                                if (error) {
-                                    deferred.reject({success: false, error: error1, stdout: stdout1, stderr: stderr1})
-                                } else {
-                                    exec('git pull', {cwd: path.join(__dirname, "dist")}, function (error2, stdout2, stderr2) {
-                                        if (error2) {
-                                            deferred.reject({success: false, error: error2, stdout: stdout2, stderr: stderr2})
-                                        } else {
-                                            deferred.resolve({success: true, error: error2, stdout: stdout2, stderr: stderr2})
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });
-                }
-            })
-        }
-    })
-    return deferred.promise;
-}
 
 /**
  * gitAddCommit - Adds all files that changed from the master that are in the dist folder, commits, and pushes these changes.
