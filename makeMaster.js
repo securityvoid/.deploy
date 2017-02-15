@@ -3,7 +3,8 @@ const webpack = require("webpack");
 const fs = require('fs-extra');
 const path = require('path');
 const q = require("q");
-const exclude = ['dist', "node_modules", "deploy.js", ".idea", ".git", 'makeMaster.js', 'package.json'];
+const exec = require('child_process').exec;
+const exclude = ['dist', "node_modules", "lib", ".idea", ".git", 'makeMaster.js', 'package.json'];
 
 //Main function to execute for the code.
 prepareDistFolder().then(copyFiles).then(webPackIt).then(gitAddCommit).then(function(results){
@@ -82,12 +83,7 @@ function copyFiles(){
                 if (err)
                     deferred.reject({success : false, error : err});
                 else {
-                    fs.copy(path.join(__dirname, "node_modules", "uglify-js"), path.join(dist, "node_modules", "uglify-js"), function(err){
-                        if (err)
-                            deferred.reject({success : false, error : err, action: "uglify-copy"});
-                        else
-                            deferred.resolve({success : true});
-                    });
+                    deferred.resolve({success : true});
                 }
             })
         }
@@ -103,11 +99,11 @@ function webPackIt(){
     var deferred = q.defer();
 
     var compiler = webpack({
-        entry: path.join(__dirname, "deploy.js"),
+        entry: path.join(__dirname, "lib", "index.js"),
         target: 'node',
         output : {
             path : path.join(__dirname, "dist"),
-            filename : "deploy.js"
+            filename : "lib.js"
         },
         node: {
             __filename: false,
@@ -125,10 +121,6 @@ function webPackIt(){
         ],
         module: {
             loaders: [{
-                loader: "babel-loader",
-                test: /\.js$/,
-                exclude: "/node_modules/uglify-js",
-            },{
                 test: /\.json$/,
                 loader: 'json-loader'
             }]
