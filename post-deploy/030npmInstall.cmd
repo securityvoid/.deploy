@@ -9,6 +9,7 @@ FOR /D %%i IN (*.*) DO (
         pushd "%DEPLOYMENT_SOURCE%\%%i"
         echo %date% %time% NPM Installing: %DEPLOYMENT_SOURCE%\%%i\package.json
         npm install --production --progress=false --cache-min=432000
+        npm install --save json-loader --progress=false --cache-min=432000
         IF !ERRORLEVEL! NEQ 0 goto error
         popd
         @echo off
