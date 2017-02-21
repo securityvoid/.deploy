@@ -3,18 +3,16 @@ setlocal enabledelayedexpansion
 
 echo %~n0: Started %date% %time%
 
-FOR /D %%i IN (*.*) DO (
-    @echo %date% %time% - Current: %%i
-    IF EXIST "%DEPLOYMENT_SOURCE%\%%i\package.json" (
-        pushd "%DEPLOYMENT_SOURCE%\%%i"
-        echo %date% %time% NPM Installing: %DEPLOYMENT_SOURCE%\%%i\package.json
-        npm install --production --progress=false --cache-min=432000
-        npm install --save json-loader --progress=false --cache-min=432000
-        IF !ERRORLEVEL! NEQ 0 goto error
-        popd
-        @echo off
-      )
-)
+IF EXIST "%DEPLOYMENT_SOURCE%\package.json" (
+    pushd "%DEPLOYMENT_SOURCE%"
+    echo %date% %time% NPM Installing: %DEPLOYMENT_SOURCE%\package.json
+    npm install --production --progress=false --cache-min=432000
+    npm install --save json-loader --progress=false --cache-min=432000
+    IF !ERRORLEVEL! NEQ 0 goto error
+    popd
+    @echo off
+  )
+
 echo %~n0: Completed %date% %time%
 goto end
 
