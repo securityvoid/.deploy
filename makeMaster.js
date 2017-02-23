@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const q = require("q");
 const exec = require('child_process').exec;
-const exclude = ['dist', "node_modules", "lib", ".idea", ".git", 'makeMaster.js', 'package.json'];
+const exclude = ['dist', "node_modules", "lib", ".idea", ".git", 'makeMaster.js'];
 
 //Main function to execute for the code.
 prepareDistFolder().then(copyFiles).then(webPackIt).then(gitAddCommit).then(function(results){
