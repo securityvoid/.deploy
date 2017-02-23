@@ -11,7 +11,16 @@ IF EXIST "%DEPLOYMENT_SOURCE%\package.json" (
     IF !ERRORLEVEL! NEQ 0 goto error
     popd
     @echo off
-  )
+)
+
+IF EXIST "%DEPLOYMENT_SOURCE%\.deploy\package.json" (
+    pushd "%DEPLOYMENT_SOURCE%\.deploy"
+    echo %date% %time% NPM Installing: %DEPLOYMENT_SOURCE%\.deploy\package.json
+    npm install --production --progress=false --cache-min=432000
+    IF !ERRORLEVEL! NEQ 0 goto error
+    popd
+    @echo off
+)
 
 echo %~n0: Completed %date% %time%
 goto end
