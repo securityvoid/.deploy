@@ -26,6 +26,11 @@ IF NOT DEFINED DEPLOYMENT_SOURCE (
   SET DEPLOYMENT_SOURCE=%~dp0%.
 )
 
+IF NOT DEFINED DEPLOYMENT_DIST (
+    SET DEPLOYMENT_DIST = %DEPLOYMENT_SOURCE\dist
+)
+
+
 IF NOT DEFINED DEPLOYMENT_TARGET (
   SET DEPLOYMENT_TARGET=%ARTIFACTS%\wwwroot
 )
@@ -74,16 +79,12 @@ echo Handling function App deployment.
 :: 1. Build Script
 node .deploy/deploy.js
 
-:: 2. Copy Files
-FOR /f "tokens=1,2" %%I IN ('git.exe diff --name-status %PREVIOUS_SCM_COMMIT_ID% %SCM_COMMIT_ID%') DO (
-  IF "%%~I" == "D" (
-    echo "REMOVING:%DEPLOYMENT_TARGET%\%%~J"
-    del "%DEPLOYMENT_TARGET%\%%~J"
-  ) ELSE (
-    echo "COPYING:%DEPLOYMENT_TARGET%\%%~J"
-    copy "%DEPLOYMENT_DIST%\%%~J" "%DEPLOYMENT_TARGET%\%%~J"
-  )
+:: 2. KuduSync
+IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
+  call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_DIST%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+  IF !ERRORLEVEL! NEQ 0 goto error
 )
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
 
