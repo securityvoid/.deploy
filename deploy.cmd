@@ -66,12 +66,12 @@ for /F "tokens=5 delims=.\" %%a in ("%PREVIOUS_MANIFEST_PATH%") do SET PREVIOUS_
 @echo "Initiating Pre-Deployment: %date% %time%"
 
 for /F %%f in ('git.exe diff --name-only %PREVIOUS_SCM_COMMIT_ID% %SCM_COMMIT_ID% ^| grep package.json') do (
-    SET PACKAGE_JSON=%%~f
-    echo %PACKAGE_JSON%
+    SET PACKAGEJSON=%%~f
+    echo %PACKAGEJSON%
     echo %%f
     echo %%~f
-    echo "NPM Install: %DEPLOYMENT_SOURCE%\%PACKAGE_JSON:~-12%"
-    pushd "%DEPLOYMENT_SOURCE%\%PACKAGE_JSON:~-12%"
+    echo "NPM Install: %DEPLOYMENT_SOURCE%\%PACKAGEJSON:~-12%"
+    pushd "%DEPLOYMENT_SOURCE%\%PACKAGEJSON:~-12%"
     npm install --production --progress=false --cache-min=432000
     npm install --save json-loader --progress=false --cache-min=432000
     IF !ERRORLEVEL! NEQ 0 goto error
