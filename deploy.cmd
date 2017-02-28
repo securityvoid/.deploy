@@ -1,4 +1,5 @@
 @if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
+@echo Started: %date% %time%
 
 :: ----------------------
 :: KUDU Deployment Script
@@ -25,15 +26,17 @@ SET ARTIFACTS=%~dp0%..\artifacts
 IF NOT DEFINED DEPLOYMENT_SOURCE (
   SET DEPLOYMENT_SOURCE=%~dp0%.
 )
+echo "Deployment Source: %DEPLOYMENT_SOURCE%"
 
 IF NOT DEFINED DEPLOYMENT_DIST (
     SET DEPLOYMENT_DIST = %DEPLOYMENT_SOURCE%\dist
 )
-
+echo "Deployment Dist: %DEPLOYMENT_DIST%"
 
 IF NOT DEFINED DEPLOYMENT_TARGET (
   SET DEPLOYMENT_TARGET=%ARTIFACTS%\wwwroot
 )
+echo "Deployment Target: %DEPLOYMENT_TARGET%"
 
 IF NOT DEFINED NEXT_MANIFEST_PATH (
   SET NEXT_MANIFEST_PATH=%ARTIFACTS%\manifest
@@ -58,6 +61,7 @@ for /F "tokens=5 delims=.\" %%a in ("%PREVIOUS_MANIFEST_PATH%") do SET PREVIOUS_
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Pre-Deployment
 :: ----------
+@echo "Initiating Pre-Deployment: %date% %time%"
 
 for /F %%f in ('git.exe diff --name-only %PREVIOUS_SCM_COMMIT_ID% %SCM_COMMIT_ID% ^| grep package.json') do (
     SET PACKAGE_JSON=%%f
@@ -74,7 +78,7 @@ for /F %%f in ('git.exe diff --name-only %PREVIOUS_SCM_COMMIT_ID% %SCM_COMMIT_ID
 :: Deployment
 :: ----------
 
-echo Handling function App deployment.
+@echo "Initiating Deployment: %date% %time%"
 
 :: 1. Build Script
 node .deploy/deploy.js
