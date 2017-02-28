@@ -67,7 +67,9 @@ for /F "tokens=5 delims=.\" %%a in ("%PREVIOUS_MANIFEST_PATH%") do SET PREVIOUS_
 
 for /F %%f in ('git.exe diff --name-only %PREVIOUS_SCM_COMMIT_ID% %SCM_COMMIT_ID% ^| grep package.json') do (
     SET PACKAGE_JSON=%%~f
-    echo "package.json : %PACKAGE_JSON%"
+    echo %PACKAGE_JSON%
+    echo %%f
+    echo %%~f
     echo "NPM Install: %DEPLOYMENT_SOURCE%\%PACKAGE_JSON:~-12%"
     pushd "%DEPLOYMENT_SOURCE%\%PACKAGE_JSON:~-12%"
     npm install --production --progress=false --cache-min=432000
