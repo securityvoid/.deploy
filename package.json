@@ -6,7 +6,7 @@
   "author": "Doug Logan <dlogan@cyberninjas.com>",
   "dependencies": {
     "json-loader": "^0.5.4",
-    "uglify-js": "^2.7.5",
+    //"uglify-js": "^2.7.5",
     "webpack": "^1.14.0"
   },
   "devDependencies": {
