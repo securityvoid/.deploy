@@ -108,6 +108,7 @@ for /F %%f in ('git.exe diff --name-only %PREVIOUS_SCM_COMMIT_ID% %SCM_COMMIT_ID
 
 :: 1. Build Script
 node %DEPLOYMENT_SOURCE%\.deploy\deploy.js
+IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 2. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
