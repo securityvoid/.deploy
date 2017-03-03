@@ -65,17 +65,17 @@ for /F "tokens=5 delims=.\" %%a in ("%PREVIOUS_MANIFEST_PATH%") do SET PREVIOUS_
 :: ----------
 @echo "Initiating Pre-Deployment: %date% %time%"
 :: .deploy initial install if node_modules doesn't exist.
-IF NOT EXIST %DEPLOYMENT_SOURCE%\.deploy\node_modules (
+IF NOT EXIST "%DEPLOYMENT_SOURCE%\.deploy\node_modules" (
     echo "NPM Install: %DEPLOYMENT_SOURCE%\.deploy\package.json"
-    pushd %DEPLOYMENT_SOURCE%\.deploy\
+    pushd "%DEPLOYMENT_SOURCE%\.deploy\"
     npm install --production --progress=false --cache-min=432000
     popd
 )
 
 ::Initial install if node_modules doesn't exist.
-IF EXIST %DEPLOYMENT_SOURCE%\package.json IF NOT EXIST %DEPLOYMENT_SOURCE%\node_modules (
+IF EXIST "%DEPLOYMENT_SOURCE%\package.json" IF NOT EXIST "%DEPLOYMENT_SOURCE%\node_modules" (
     echo "NPM Install: %DEPLOYMENT_SOURCE%\package.json"
-    pushd %DEPLOYMENT_SOURCE%
+    pushd "%DEPLOYMENT_SOURCE%"
     npm install --production --progress=false --cache-min=432000
     popd
 )
