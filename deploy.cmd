@@ -71,7 +71,7 @@ IF NOT EXIST "%DEPLOYMENT_SOURCE%\.deploy\node_modules" (
     npm install --production --progress=false --cache-min=432000
     popd
 ) ELSE (
-   "%DEPLOYMENT_SOURCE%\.deploy\node_modules already exists"
+   echo "%DEPLOYMENT_SOURCE%\.deploy\node_modules already exists"
 )
 
 ::Initial install if node_modules doesn't exist.
