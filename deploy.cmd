@@ -124,8 +124,9 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 :: Cleanup
 :: ----------
 echo."Removing %DEPLOYMENT_TARGET%\%DEPLOY_DIST_FOLDER%"
-del /f/s/q "%DEPLOYMENT_TARGET%\%DEPLOY_DIST_FOLDER%" > nul
-rmdir /s/q "%DEPLOYMENT_TARGET%\%DEPLOY_DIST_FOLDER%"
+del /f/s/q "%DEPLOYMENT_SOURCE%\%DEPLOY_DIST_FOLDER%" > nul
+rmdir /s/q "%DEPLOYMENT_SOURCE%\%DEPLOY_DIST_FOLDER%"
+IF !ERRORLEVEL! NEQ 0 goto error
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
