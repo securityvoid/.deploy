@@ -73,11 +73,17 @@ IF NOT EXIST "%DEPLOYMENT_SOURCE%\.deploy\node_modules" (
 )
 
 ::Initial install if node_modules doesn't exist.
-IF EXIST "%DEPLOYMENT_SOURCE%\package.json" IF NOT EXIST "%DEPLOYMENT_SOURCE%\node_modules" (
-    echo "NPM Install: %DEPLOYMENT_SOURCE%\package.json"
-    pushd "%DEPLOYMENT_SOURCE%"
-    npm install --production --progress=false --cache-min=432000
-    popd
+IF EXIST "%DEPLOYMENT_SOURCE%\package.json" (
+ echo "Main package.json exists."
+    IF NOT EXIST "%DEPLOYMENT_SOURCE%\node_modules" (
+        echo "NPM Install: %DEPLOYMENT_SOURCE%\package.json"
+        pushd "%DEPLOYMENT_SOURCE%"
+        npm install --production --progress=false --cache-min=432000
+        npm install --save json-loader --progress=false --cache-min=432000
+        popd
+    ) ELSE (
+        echo "Main node_modules exists"
+    )
 )
 
 @echo "Previous Commit: %PREVIOUS_SCM_COMMIT_ID%  Current Commit: %SCM_COMMIT_ID%"
