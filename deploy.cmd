@@ -84,6 +84,8 @@ IF EXIST "%DEPLOYMENT_SOURCE%\package.json" (
     ) ELSE (
         echo "Main node_modules exists"
     )
+) ELSE (
+ echo "No main package.json."
 )
 
 @echo "Previous Commit: %PREVIOUS_SCM_COMMIT_ID%  Current Commit: %SCM_COMMIT_ID%"
