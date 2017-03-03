@@ -108,7 +108,6 @@ for /F %%f in ('git.exe diff --name-only %PREVIOUS_SCM_COMMIT_ID% %SCM_COMMIT_ID
 
 :: 1. Build Script
 node %DEPLOYMENT_SOURCE%\.deploy\deploy.js
-SET
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 2. KuduSync
@@ -116,6 +115,13 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
   call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_DIST%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
   IF !ERRORLEVEL! NEQ 0 goto error
 )
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Cleanup
+:: ----------
+echo."Removing %DEPLOYMENT_TARGET%\%DEPLOY_DIST_FOLDER%"
+del /f/s/q "%DEPLOYMENT_TARGET%\%DEPLOY_DIST_FOLDER%" > nul
+rmdir /s/q "%DEPLOYMENT_TARGET%\%DEPLOY_DIST_FOLDER%"
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 goto end
