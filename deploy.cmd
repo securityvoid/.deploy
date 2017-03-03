@@ -64,7 +64,15 @@ for /F "tokens=5 delims=.\" %%a in ("%PREVIOUS_MANIFEST_PATH%") do SET PREVIOUS_
 :: Pre-Deployment
 :: ----------
 @echo "Initiating Pre-Deployment: %date% %time%"
+:: .deploy initial install if node_modules doesn't exist.
+IF NOT EXIST %DEPLOYMENT_SOURCE%\.deploy\node_modules (
+    echo "NPM Install: %DEPLOYMENT_SOURCE%\.deploy\package.json"
+    pushd %DEPLOYMENT_SOURCE%\.deploy\
+    npm install --production --progress=false --cache-min=432000
+)
+
 @echo "Previous Commit: %PREVIOUS_SCM_COMMIT_ID%  Current Commit: %SCM_COMMIT_ID%"
+:: Only do npm install if there was a change in package.json
 for /F %%f in ('git.exe diff --name-only %PREVIOUS_SCM_COMMIT_ID% %SCM_COMMIT_ID% ^| grep package.json') do (
     SET PACKAGEJSON=%%~f
     SET PKGFOLDER=!DEPLOYMENT_SOURCE!\!PACKAGEJSON:package.json=!
