@@ -28,8 +28,12 @@ IF NOT DEFINED DEPLOYMENT_SOURCE (
 )
 echo "Deployment Source: %DEPLOYMENT_SOURCE%"
 
+IF NOT DEFINED DEPLOY_DIST_FOLDER(
+    SET DEPLOY_DIST_FOLDER=dist
+)
+
 IF NOT DEFINED DEPLOYMENT_DIST (
-    SET DEPLOYMENT_DIST=%DEPLOYMENT_SOURCE%\dist
+    SET DEPLOYMENT_DIST=%DEPLOYMENT_SOURCE%\%DEPLOY_DIST_FOLDER%
 ) ELSE (
     ECHO "Deployement Dist already set"
 )
@@ -105,8 +109,8 @@ for /F %%f in ('git.exe diff --name-only %PREVIOUS_SCM_COMMIT_ID% %SCM_COMMIT_ID
 
 :: Clean-up Dist before we start.
 echo."Removing %DEPLOYMENT_TARGET%\%DEPLOY_DIST_FOLDER%"
-del /f/s/q "%DEPLOYMENT_SOURCE%\%DEPLOY_DIST_FOLDER%" > nul
-rmdir /s/q "%DEPLOYMENT_SOURCE%\%DEPLOY_DIST_FOLDER%"
+del /f/s/q "%DEPLOYMENT_DIST%" > nul
+rmdir /s/q "%DEPLOYMENT_DIST%"
 IF !ERRORLEVEL! NEQ 0 goto error
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
