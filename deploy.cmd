@@ -72,7 +72,7 @@ for /F "tokens=5 delims=.\" %%a in ("%PREVIOUS_MANIFEST_PATH%") do SET PREVIOUS_
 IF NOT EXIST "%DEPLOYMENT_SOURCE%\.deploy\node_modules" (
     echo "NPM Install: %DEPLOYMENT_SOURCE%\.deploy\package.json"
     pushd "%DEPLOYMENT_SOURCE%\.deploy\"
-    npm install --production --progress=false --cache-min=432000
+    call npm install --production --progress=false --cache-min=432000
     popd
 ) ELSE (
    echo "%DEPLOYMENT_SOURCE%\.deploy\node_modules already exists"
@@ -84,8 +84,8 @@ IF EXIST "%DEPLOYMENT_SOURCE%\package.json" (
     IF NOT EXIST "%DEPLOYMENT_SOURCE%\node_modules" (
         echo "NPM Install: %DEPLOYMENT_SOURCE%\package.json"
         pushd "%DEPLOYMENT_SOURCE%"
-        npm install --production --progress=false --cache-min=432000
-        npm install --save json-loader --progress=false --cache-min=432000
+        call npm install --production --progress=false --cache-min=432000
+        call npm install --save json-loader --progress=false --cache-min=432000
         popd
     ) ELSE (
         echo "Main node_modules exists"
