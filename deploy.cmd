@@ -101,16 +101,16 @@ for /F %%f in ('git.exe diff --name-only %PREVIOUS_SCM_COMMIT_ID% %SCM_COMMIT_ID
     SET PKGFOLDER=!DEPLOYMENT_SOURCE!\!PACKAGEJSON:package.json=!
     echo "NPM Install: !PKGFOLDER!package.json"
     pushd "!PKGFOLDER!"
-    npm install --production --progress=false --cache-min=432000
-    npm install --save json-loader --progress=false --cache-min=432000
+    call npm install --production --progress=false --cache-min=432000
+    call npm install --save json-loader --progress=false --cache-min=432000
     IF !ERRORLEVEL! NEQ 0 goto error
     popd
 )
 
 :: Clean-up Dist before we start.
 echo."Removing %DEPLOYMENT_TARGET%\%DEPLOY_DIST_FOLDER%"
-del /f/s/q "%DEPLOYMENT_DIST%" > nul
-rmdir /s/q "%DEPLOYMENT_DIST%"
+call del /f/s/q "%DEPLOYMENT_DIST%" > nul
+call rmdir /s/q "%DEPLOYMENT_DIST%"
 IF !ERRORLEVEL! NEQ 0 goto error
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
