@@ -5,6 +5,7 @@
   "description": "Initial Reporting Tool",
   "author": "Doug Logan <dlogan@cyberninjas.com>",
   "dependencies": {
+    "dotenv": "^4.0.0",
     "json-loader": "^0.5.4",
     "uglify-js": "^2.7.5",
     "webpack": "^1.14.0"
