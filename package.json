@@ -5,12 +5,12 @@
   "description": "Initial Reporting Tool",
   "author": "Doug Logan <dlogan@cyberninjas.com>",
   "dependencies": {
-    "dotenv": "^4.0.0",
     "json-loader": "^0.5.4",
     "uglify-js": "^2.7.5",
     "webpack": "^1.14.0"
   },
   "devDependencies": {
+    "dotenv": "^4.0.0",
     "child_process": "^1.0.2",
     "fs-extra": "^2.0.0",
     "path": "^0.12.7",
