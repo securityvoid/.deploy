@@ -1,7 +1,7 @@
 
 
 
-#THIS SCRIPT IS DEPRECIATED AND UNSUPPORTED
+# THIS SCRIPT IS DEPRECIATED AND UNSUPPORTED
 
 Please use [pack-git](https://github.com/securityvoid/pack-git) instead. 
 
