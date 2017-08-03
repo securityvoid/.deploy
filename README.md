@@ -1,3 +1,21 @@
+
+
+
+#THIS SCRIPT IS DEPRECIATED AND UNSUPPORTED
+
+Please use [pack-git](https://github.com/securityvoid/pack-git) instead. 
+
+
+
+
+
+
+
+------------------------------------------------
+
+Below is for posterity purposes only.
+
+
 # .deploy
 Azure Deploy Scripts for Azure Functions to Webpack and Uglify all node_modules during deploy from source-control.
 
